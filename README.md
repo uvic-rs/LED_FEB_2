@@ -17,19 +17,19 @@ firmware for the LED_FEB in the Hyper-K experiment.
 ## Input Registers
 | function | Modbus addresses |
 | ------------- | ------------- |
-| R_FIRMWARE_VERSION      | 0 |
-| R_LED_CURRENT_ERROR     | 1 |
-| R_LED_BIAS_ERROR        | 2 |
-| R_TRIG_SOURCE_ERR       | 3 |
-| R_LED_FEB_MB_SLAVE_ERR  | 4 |
-| R_LED_FEB_MB_GLOBAL_ERR | 5 |
+| R_FIRMWARE_VERSION      | 30001 |
+| R_LED_CURRENT_ERROR     | 30002 |
+| R_LED_BIAS_ERROR        | 30003 |
+| R_TRIG_SOURCE_ERR       | 30004 |
+| R_LED_FEB_MB_SLAVE_ERR  | 30005 |
+| R_LED_FEB_MB_GLOBAL_ERR | 30006 |
 
 ## Holding Registers
 | function | Modbus addresses |
 | ------------- | ------------- |
-| O_TRIGGER_SOURCE        | 0 |
-| O_LED_CHANNELS          | 1 |
-| O_LED_BIAS_DAC_SET      | 2 |
-| O_LED_BIAS_ADC_READ     | 3 |
-| O_IMON_ADC_READ         | 4 |
-| O_LIGHTMODBUS_SLAVE_ID  | 5 |
+| O_TRIGGER_SOURCE        | 40001 |
+| O_LED_CHANNELS          | 40002 |
+| O_LED_BIAS_DAC_SET      | 40003 |
+| O_LED_BIAS_ADC_READ     | 40004 |
+| O_IMON_ADC_READ         | 40005 |
+| O_LIGHTMODBUS_SLAVE_ID  | 40006 |
