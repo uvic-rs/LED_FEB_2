@@ -19,12 +19,13 @@
 
 // Firmware for the LED Driver Board -  Mach III revision
 // Changes history
-//      August 10, 2025 - Rolf S - ver. 0.1.0: ported to M3,
+//      Oct.   14, 2025 - Rolf S - ver. 0.2.0: add some safety checks
 //      Sept   16, 2025 - Rolf S - ver. 0.1.1: cleanup and imported to github
+//      August 10, 2025 - Rolf S - ver. 0.1.0: ported to M3,
 // currently, left 3 digits need to be in range of 0..9 only see (*1*)
 #define VERSION_MAYOR 0x0
-#define VERSION_MINOR 0x1
-#define VERSION_PATCH 0x1
+#define VERSION_MINOR 0x2
+#define VERSION_PATCH 0x0
 
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
@@ -64,65 +65,52 @@ typedef enum {board, internal, external} trig_source;
 #define LED_FEB_MB_HOLD_BASE 40001   // holding registers 16 bits / rw
 
 // coils
-#define R_POWER_ON            0
-#define R_TRIGGER_ENABLE      1
-#define R_LED_BIAS_ENABLE     2
-#define POWER_ON              LED_FEB_MB_COIL_BASE+R_POWER_ON
-#define TRIGGER_ENABLE        LED_FEB_MB_COIL_BASE+R_TRIGGER_ENABLE
-#define LED_BIAS_ENABLE       LED_FEB_MB_COIL_BASE+R_LED_BIAS_ENABLE
-// #define SIPM_BIAS_ENABLE      LED_FEB_MB_COIL_BASE+3
-//o #define POWER_ON              LED_FEB_MB_COIL_BASE+0
-//o #define TRIGGER_ENABLE        LED_FEB_MB_COIL_BASE+1
-//o #define LED_BIAS_ENABLE       LED_FEB_MB_COIL_BASE+2
-//o// #define SIPM_BIAS_ENABLE      LED_FEB_MB_COIL_BASE+3
+#define C_POWER_ON            0
+#define C_TRIGGER_ENABLE      1
+#define C_LED_BIAS_ENABLE     2
+#define C_FIRST_PULSE_FIX     3
+#define C_RESET_ERROR_COUNT   4
+#define POWER_ON              LED_FEB_MB_COIL_BASE+C_POWER_ON
+#define TRIGGER_ENABLE        LED_FEB_MB_COIL_BASE+C_TRIGGER_ENABLE
+#define LED_BIAS_ENABLE       LED_FEB_MB_COIL_BASE+C_LED_BIAS_ENABLE
+#define FIRST_PULSE_FIX       LED_FEB_MB_COIL_BASE+C_FIRST_PULSE_FIX
+#define RESET_ERROR_COUNT     LED_FEB_MB_COIL_BASE+C_RESET_ERROR_COUNT
 
 // discrete input
-#define R_POWER_STATUS        0
-#define POWER_STATUS          LED_FEB_MB_DESC_BASE+R_POWER_STATUS
+#define D_POWER_STATUS        0
+#define POWER_STATUS          LED_FEB_MB_DESC_BASE+D_POWER_STATUS
 
 // input registers (mostly errors)
 #define R_FIRMWARE_VERSION      0
-#define R_LED_CURRENT_ERROR     1
-#define R_LED_BIAS_ERROR        2
-#define R_TRIG_SOURCE_ERR       3
-#define R_LED_FEB_MB_SLAVE_ERR  4
-#define R_LED_FEB_MB_GLOBAL_ERR 5
+#define R2_LED_BIAS_ADC_READ     1
+#define R2_IMON_ADC_READ         2
+#define R_LED_CURRENT_ERROR     3
+#define R_LED_BIAS_ERROR        4
+#define R_TRIG_SOURCE_ERR       5
+#define R_LED_FEB_MB_SLAVE_ERR  6
+#define R_LED_FEB_MB_GLOBAL_ERR 7
 #define FIRMWARE_VERSION        LED_FEB_MB_INPR_BASE+R_FIRMWARE_VERSION
+#define LED_BIAS_ADC_READ       LED_FEB_MB_INPR_BASE+R2_LED_BIAS_ADC_READ
+#define IMON_ADC_READ           LED_FEB_MB_INPR_BASE+R2_IMON_ADC_READ
 #define LED_CURRENT_ERROR       LED_FEB_MB_INPR_BASE+R_LED_CURRENT_ERROR
 #define LED_BIAS_ERROR          LED_FEB_MB_INPR_BASE+R_LED_BIAS_ERROR
 #define TRIG_SOURCE_ERR         LED_FEB_MB_INPR_BASE+R_TRIG_SOURCE_ERR
 #define LED_FEB_MB_SLAVE_ERR    LED_FEB_MB_INPR_BASE+R_LED_FEB_MB_SLAVE_ERR
 #define LED_FEB_MB_GLOBAL_ERR   LED_FEB_MB_INPR_BASE+R_LED_FEB_MB_GLOBAL_ERR
-//o#define LED_CURRENT_ERROR     LED_FEB_MB_INPR_BASE+0
-//o#define LED_BIAS_ERROR        LED_FEB_MB_INPR_BASE+1
-//o// #define SIPM_LIGHT_ERROR      LED_FEB_MB_INPR_BASE+2
-//o// #define SIPM_BIAS_ERROR       LED_FEB_MB_INPR_BASE+3
-//o#define TRIG_SOURCE_ERR       LED_FEB_MB_INPR_BASE+4
-//o#define LED_FEB_MB_SLAVE_ERR  LED_FEB_MB_INPR_BASE+5
-//o#define LED_FEB_MB_GLOBAL_ERR LED_FEB_MB_INPR_BASE+6
-//o#define FIRMWARE_VERSION      LED_FEB_MB_INPR_BASE+7
 
 // holding registers
-#define O_TRIGGER_SOURCE        0
-#define O_LED_CHANNELS          1
-#define O_LED_BIAS_DAC_SET      2
-#define O_LED_BIAS_ADC_READ     3
-#define O_IMON_ADC_READ         4
-#define O_LIGHTMODBUS_SLAVE_ID  5
-#define TRIGGER_SOURCE          LED_FEB_MB_HOLD_BASE+O_TRIGGER_SOURCE
-#define LED_CHANNELS            LED_FEB_MB_HOLD_BASE+O_LED_CHANNELS
-#define LED_BIAS_DAC_SET        LED_FEB_MB_HOLD_BASE+O_LED_BIAS_DAC_SET
-#define LED_BIAS_ADC_READ       LED_FEB_MB_HOLD_BASE+O_LED_BIAS_ADC_READ
-#define IMON_ADC_READ           LED_FEB_MB_HOLD_BASE+O_IMON_ADC_READ
-#define LIGHTMODBUS_SLAVE_ID    LED_FEB_MB_HOLD_BASE+O_LIGHTMODBUS_SLAVE_ID
-//o#define TRIGGER_SOURCE        LED_FEB_MB_HOLD_BASE+0
-//o#define LED_CHANNELS          LED_FEB_MB_HOLD_BASE+1
-//o#define LED_BIAS_DAC_SET      LED_FEB_MB_HOLD_BASE+2
-//o#define LED_BIAS_ADC_READ     LED_FEB_MB_HOLD_BASE+3
-//o#define IMON_ADC_READ         LED_FEB_MB_HOLD_BASE+4
-//o// #define SIPM_BIAS_DAC_SET     LED_FEB_MB_HOLD_BASE+4
-//o// #define SIPM_BIAS_ADC_READ    LED_FEB_MB_HOLD_BASE+5
-//o#define LIGHTMODBUS_SLAVE_ID  LED_FEB_MB_HOLD_BASE+6
+#define H_TRIGGER_SOURCE        0
+#define H_LED_CHANNELS          1
+#define H_LED_BIAS_DAC_SET      2
+#define H_ALARM_THRESHOLD       3
+#define H_uC_FLASH_FREQ         4
+#define H_LIGHTMODBUS_SLAVE_ID  5
+#define TRIGGER_SOURCE          LED_FEB_MB_HOLD_BASE+H_TRIGGER_SOURCE
+#define LED_CHANNELS            LED_FEB_MB_HOLD_BASE+H_LED_CHANNELS
+#define LED_BIAS_DAC_SET        LED_FEB_MB_HOLD_BASE+H_LED_BIAS_DAC_SET
+#define ALARM_THRESHOLD         LED_FEB_MB_HOLD_BASE+H_ALARM_THRESHOLD
+#define uC_FLASH_FREQ           LED_FEB_MB_HOLD_BASE+H_uC_FLASH_FREQ
+#define LIGHTMODBUS_SLAVE_ID    LED_FEB_MB_HOLD_BASE+H_LIGHTMODBUS_SLAVE_ID
 
 #define USE_SERIAL_1 1
 /* USER CODE END PD */
@@ -144,6 +132,9 @@ TIM_HandleTypeDef htim22;
 
 osThreadId defaultTaskHandle;
 /* USER CODE BEGIN PV */
+
+uint16_t bias_adc[5];
+uint16_t imon_adc[5];
 
 uint32_t value_adc;	// ADC1, 2 testing
 
@@ -342,7 +333,7 @@ void LockEeprom(void)
   FLASH->PECR = FLASH->PECR | FLASH_PECR_PELOCK;
 }
 
-uint16_t Read_SID_from_NVRAM()
+uint16_t Read_SID_from_EEPROM()
 {
   uint16_t d = *(__IO uint16_t *)DATA_EEPROM_BASE_ADDR;
   
@@ -355,7 +346,7 @@ uint16_t Read_SID_from_NVRAM()
   // no error detection
   return d;
 }
-void Transfer_SID_to_NVRAM(uint16_t sid)
+void Transfer_SID_to_EEPROM(uint16_t sid)
 {
   /* Unlock the EEPROM and enable flash interrupts */
   UnlockEeprom();
@@ -407,6 +398,14 @@ void FixFirstPulse()
   // HAL_GPIO_WritePin (TRIG_OE_GPIO_Port,  TRIG_OE_Pin,        0);
 }
 
+void DAC_Value_SetLow()
+{
+  uint32_t dac_value = 0xFFF; // Value to load into DAC
+  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, dac_value);  // write to DAC holding register
+  HAL_DAC_Start(&hdac, DAC_CHANNEL_1);  // software trigger
+  osDelay(10);
+}
+
 void PowerOn()
 {
   // disable all LEDs
@@ -416,9 +415,10 @@ void PowerOn()
     }
   // OLD: write_DAC_values(chA, 0xB76, 0x000); // set LED bias to about 6 V
   // now:
-  uint32_t dac_value = 0x0FFF; // minimum Value to load into DAC
-  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, dac_value);  // write to DAC holding register
-  HAL_DAC_Start(&hdac, DAC_CHANNEL_1);  // software trigger
+  DAC_Value_SetLow();
+  /*  uint32_t dac_value = 0x0FFF; // minimum Value to load into DAC
+      HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, dac_value);  // write to DAC holding register
+      HAL_DAC_Start(&hdac, DAC_CHANNEL_1);  // software trigger */
   // Power Enable Sequence
 #if USE_SERIAL_1
   serial_1_println("in PON 0");
@@ -449,25 +449,29 @@ void PowerOn()
 #endif
   osDelay(100);
 #if USE_SERIAL_1
-  serial_1_println("in PON 8");
-#endif
-#if USE_SERIAL_1
   serial_1_println("in PON 7");
+#endif
+  // FixFirstPulse();
+  if (modbusMaskRead(coils, C_FIRST_PULSE_FIX))
+    {
+      FixFirstPulse();
+    }
+#if USE_SERIAL_1
+  serial_1_println("in PON 8");
 #endif
   /* moved to trigger source selection
   // Setup timer for pulsing
   __HAL_TIM_SET_AUTORELOAD(&htim22, (32 / 2) - 1); // provide some default rate (1MHz)
   __HAL_TIM_SET_COMPARE(&htim22, TIM_CHANNEL_2, (32 / 4) - 1);
-  HAL_TIM_PWM_Start(&htim22, TIM_CHANNEL_2); */
+  HAL_TIM_PWM_Start(&htim22, TIM_CHANNEL_2); * /
 #if USE_SERIAL_1
   serial_1_println("in PON 9");
 #endif
-  
-  // FixFirstPulse();
-  
+  */
 #if USE_SERIAL_1
   serial_1_println("Board power is ON");
 #endif
+  
   modbusMaskWrite(discreteInputs, 0, 1);
 }
 
@@ -478,10 +482,11 @@ void PowerOff()
     {
       HAL_GPIO_WritePin (LED_GPIO[bit], LED_Pins[bit], 0 );
     }
-  uint32_t dac_value = 0xFFF; // Value to load into DAC
-  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, dac_value);  // write to DAC holding register
-  HAL_DAC_Start(&hdac, DAC_CHANNEL_1);  // software trigger
-  osDelay(100);
+  DAC_Value_SetLow();
+  /* uint32_t dac_value = 0xFFF; // Value to load into DAC
+     HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, dac_value);  // write to DAC holding register
+     HAL_DAC_Start(&hdac, DAC_CHANNEL_1);  // software trigger
+     osDelay(100); */
   HAL_GPIO_WritePin (BOOST_ENABLE_GPIO_Port, BOOST_ENABLE_Pin, 0);
   osDelay(100);
   HAL_GPIO_WritePin (SW_5V_ENABLE_GPIO_Port, SW_5V_ENABLE_Pin, 0);
@@ -493,16 +498,19 @@ void PowerOff()
   modbusMaskWrite(discreteInputs, 0, 0);
 }
 
-uint8_t ADC_Read()
+void ADC_Read_values(uint16_t *bias, uint16_t *imon)
 {
   HAL_ADC_Start(&hadc);
   uint8_t ret = HAL_ADC_PollForConversion(&hadc, 100 /*timeout*/);
-  registers[LED_BIAS_ADC_READ-LED_FEB_MB_HOLD_BASE] = HAL_ADC_GetValue(&hadc);
+  *bias = HAL_ADC_GetValue(&hadc);
   HAL_ADC_Start(&hadc);
   ret += HAL_ADC_PollForConversion(&hadc, 100 /*timeout*/);
-  registers[IMON_ADC_READ-LED_FEB_MB_HOLD_BASE] = HAL_ADC_GetValue(&hadc);
+  *imon = HAL_ADC_GetValue(&hadc);
   HAL_ADC_Stop(&hadc);
-  return ret;
+  inputRegisters[R2_LED_BIAS_ADC_READ] = *bias;
+  inputRegisters[R2_IMON_ADC_READ] = *imon;
+  if(ret !=0)
+    inputRegisters[R_LED_BIAS_ERROR]++;
 }
 
 ModbusError myRegisterCallback(
@@ -520,10 +528,10 @@ ModbusError myRegisterCallback(
       //  but is at index "0". All other holding registers start
       //  at index 40001. We also accept
       //  this command only if the old SLAVE_ID is 20, the default
-      if ( ( args->index == 0 ) && ( registers[O_LIGHTMODBUS_SLAVE_ID] == 20 ) )
+      if ( ( args->index == 0 ) && ( registers[H_LIGHTMODBUS_SLAVE_ID] == 20 ) )
 	{
-	  registers[O_LIGHTMODBUS_SLAVE_ID] = args->value;
-	  Transfer_SID_to_NVRAM(registers[O_LIGHTMODBUS_SLAVE_ID]);
+	  registers[H_LIGHTMODBUS_SLAVE_ID] = args->value;
+	  Transfer_SID_to_EEPROM(registers[H_LIGHTMODBUS_SLAVE_ID]);
 	}
       break;
     case MODBUS_INPUT_REGISTER:
@@ -561,22 +569,26 @@ ModbusError myRegisterCallback(
             case TRIGGER_SOURCE:
             case LED_CHANNELS:
             case LED_BIAS_DAC_SET:
-	      // case SIPM_BIAS_DAC_SET:
 	    case LIGHTMODBUS_SLAVE_ID:
-	      break;
-            case LED_BIAS_ADC_READ:
-	    case IMON_ADC_READ:
-	      uint8_t ret=ADC_Read();
-	      if(ret !=0)
-		inputRegisters[R_LED_BIAS_ERROR]++;
 	      break;
 	    }
           result->value = registers[new_index];
           break;
         case MODBUS_INPUT_REGISTER:
 #if USE_SERIAL_1
-          // serial_1_println("in callback r ir");
+	  // serial_1_println("in callback r ir");
 #endif
+	  switch(args->index)
+	    {
+            case LED_BIAS_ADC_READ:
+	    case IMON_ADC_READ:
+	      /* uint8_t ret=ADC_Read();
+		 if(ret !=0)
+		 inputRegisters[R_LED_BIAS_ERROR]++; */
+	      // nop as ADC values now read out frequently,
+	      //  with error counter increased if necessary
+	      break;
+	    }
           result->value = inputRegisters[new_index];
           break;
         case MODBUS_COIL:
@@ -616,22 +628,33 @@ ModbusError myRegisterCallback(
 		  // uC as source, set some timer as default (to remove it from PowerOn()
 		  // Setup timer for pulsing
 		  // provide some default rate (1MHz)
-		  __HAL_TIM_SET_AUTORELOAD(&htim22, (32 / 2) - 1);
-		  __HAL_TIM_SET_COMPARE(&htim22, TIM_CHANNEL_2, (32 / 4) - 1);
-		  HAL_TIM_PWM_Start(&htim22, TIM_CHANNEL_2);
+		  //		  __HAL_TIM_SET_AUTORELOAD(&htim22, (32 / 2) - 1);
+		  //		  __HAL_TIM_SET_COMPARE(&htim22, TIM_CHANNEL_2, (32 / 4) - 1);
+		  if ( registers[H_uC_FLASH_FREQ] >= 1 )
+		    {
+		      __HAL_TIM_SET_AUTORELOAD(&htim22, registers[H_uC_FLASH_FREQ] - 1);
+		      __HAL_TIM_SET_COMPARE(&htim22, TIM_CHANNEL_2, registers[H_uC_FLASH_FREQ] / 2 - 1);
+		      HAL_TIM_PWM_Start(&htim22, TIM_CHANNEL_2);
+		    }
+		  else
+		    {
+		      HAL_TIM_PWM_Stop(&htim22, TIM_CHANNEL_2);
+		      // wrong input, increase error count
+		      inputRegisters[R_TRIG_SOURCE_ERR]++;
+		    }
+		  /*  else
+		      {
+		      // default 1MHz
+		      __HAL_TIM_SET_AUTORELOAD(&htim22, (32 / 2) - 1);
+		      __HAL_TIM_SET_COMPARE(&htim22, TIM_CHANNEL_2, (32 / 4) - 1);
+		      HAL_TIM_PWM_Start(&htim22, TIM_CHANNEL_2);
+		      } */
                 case 0:
-		  // HAL_GPIO_WritePin (TRIG_SEL1_GPIO_Port, TRIG_SEL1_Pin, 0);
-		  // HAL_GPIO_WritePin (TRIG_SEL0_GPIO_Port, TRIG_SEL0_Pin, 0);
-		  // break;
-		  // HAL_GPIO_WritePin (TRIG_SEL1_GPIO_Port, TRIG_SEL1_Pin, 0);
-		  // HAL_GPIO_WritePin (TRIG_SEL0_GPIO_Port, TRIG_SEL0_Pin, 1);
-		  // break;
                 case 2:
-		  // HAL_GPIO_WritePin (TRIG_SEL1_GPIO_Port, TRIG_SEL1_Pin, 1);
-		  // HAL_GPIO_WritePin (TRIG_SEL0_GPIO_Port, TRIG_SEL0_Pin, 0);
 		  HAL_GPIO_WritePin (TRIG_SEL1_GPIO_Port, TRIG_SEL1_Pin, (args->value & 2) > 0);
 		  HAL_GPIO_WritePin (TRIG_SEL0_GPIO_Port, TRIG_SEL0_Pin, (args->value & 1) > 0);
-                  break;
+		  HAL_TIM_PWM_Stop(&htim22, TIM_CHANNEL_2);
+		  break;
                 default:
 		  // wrong input, increase error count
                   inputRegisters[R_TRIG_SOURCE_ERR]++;
@@ -642,22 +665,21 @@ ModbusError myRegisterCallback(
               uint8_t bit;
               for ( bit=0; bit<7; ++bit)
                 HAL_GPIO_WritePin (LED_GPIO[bit], LED_Pins[bit], ( args->value & ( 1 << bit) ) > 0 );
+	      for ( int s=0; s<5; ++s )
+		imon_adc[s]=0;
               break;
             case LED_BIAS_DAC_SET:
 	      // Configure and write to internal DAC
 	      uint32_t dac_value = 0x0;
 	      // update dac_value to load into DAC
-	      dac_value=registers[args->index - LED_FEB_MB_HOLD_BASE];
+	      dac_value=registers[H_LED_BIAS_DAC_SET];
 	      HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, dac_value);  // write to DAC holding register
 	      HAL_DAC_Start(&hdac, DAC_CHANNEL_1);  // software trigger
 	      break;
-            case LED_BIAS_ADC_READ:
-	      // NOP, nothing to read
-              break;
 	    case LIGHTMODBUS_SLAVE_ID:
 	      // done already
-	      // registers[O_LIGHTMODBUS_SLAVE_ID] = args->value;
-	      Transfer_SID_to_NVRAM(registers[O_LIGHTMODBUS_SLAVE_ID]);
+	      // registers[H_LIGHTMODBUS_SLAVE_ID] = args->value;
+	      Transfer_SID_to_EEPROM(registers[H_LIGHTMODBUS_SLAVE_ID]);
 	    }
           break;
         case MODBUS_COIL:
@@ -706,15 +728,28 @@ ModbusError myRegisterCallback(
 #if USE_SERIAL_1
 	      serial_1_println("in callback w c T");
 #endif
-               HAL_GPIO_WritePin (TRIG_OE_GPIO_Port,
-                                 TRIG_OE_Pin,
-                                 args->value);
+	      HAL_GPIO_WritePin (TRIG_OE_GPIO_Port,
+                                 TRIG_OE_Pin, args->value);
               break;
             case LED_BIAS_ENABLE:
 #if USE_SERIAL_1
 	      serial_1_println("in callback w c L");
 #endif
-	      HAL_GPIO_WritePin (BIAS_ENABLE_LED_GPIO_Port, BIAS_ENABLE_LED_Pin, args->value);
+	      HAL_GPIO_WritePin (BIAS_ENABLE_LED_GPIO_Port,
+				 BIAS_ENABLE_LED_Pin, args->value);
+              break;
+            case FIRST_PULSE_FIX:
+#if USE_SERIAL_1
+	      serial_1_println("in callback w c FFP");
+#endif
+	      // nothing to do, coil already set
+              break;
+            case RESET_ERROR_COUNT:
+#if USE_SERIAL_1
+	      serial_1_println("in callback w c REC");
+#endif
+	      for( int reg=R_LED_CURRENT_ERROR; reg <=R_LED_FEB_MB_GLOBAL_ERR; ++reg )
+		inputRegisters[reg]=0;
               break;
 	    }
           break;
@@ -813,9 +848,9 @@ int main(void)
   HAL_GPIO_WritePin (BIAS_ENABLE_LED_GPIO_Port, BIAS_ENABLE_LED_Pin, 0);
     
   // read out SLAVE_ID from EEPROM and save it, or set it to default if zero
-  registers[O_LIGHTMODBUS_SLAVE_ID] = Read_SID_from_NVRAM();
-  if ( registers[O_LIGHTMODBUS_SLAVE_ID] == 0)
-    registers[O_LIGHTMODBUS_SLAVE_ID] = SLAVE_ADDRESS;
+  registers[H_LIGHTMODBUS_SLAVE_ID] = Read_SID_from_EEPROM();
+  if ( registers[H_LIGHTMODBUS_SLAVE_ID] == 0)
+    registers[H_LIGHTMODBUS_SLAVE_ID] = SLAVE_ADDRESS;
   
   // IMON reset configured for 'latch' mode
   HAL_Delay(100);  // power stabilize
@@ -1286,7 +1321,21 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+// test for alarm in bias current too high.
+// condition:
+//  no LED enabled, but current
+//  or flashes triggered.
+void test_for_alarm()
+{
+  if ( ( 5 * registers[H_ALARM_THRESHOLD] <
+       imon_adc[0]+
+       imon_adc[1]+
+       imon_adc[2]+
+       imon_adc[3]+
+       imon_adc[4] ) &&
+       registers[H_LED_CHANNELS] == 0 )
+    inputRegisters[R_LED_CURRENT_ERROR]++;
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -1310,7 +1359,7 @@ void StartDefaultTask(void const * argument)
     msg[0]=c;
     if(power_changed)
       {
-	if (modbusMaskRead(coils, R_POWER_ON) )
+	if (modbusMaskRead(coils, C_POWER_ON) )
 	  {
 	    msg[2]='1';
 	    PowerOn();
@@ -1325,7 +1374,22 @@ void StartDefaultTask(void const * argument)
 #if USE_SERIAL_1
     serial_1_print(msg);
     serial_1_println(" in StartDefaultTask");
-    osDelay(1000);
+    // reduce time here
+    // add loop over ADC read imon
+    for ( int i=0; i<40; ++i)
+      {
+	/* for ( int l(0); l<4; ++l)
+	   {
+	   bias_adc[l+1]=bias_adc[l];
+	   imon_adc[l+1]=imon_adc[l];
+	   }
+	ADC_Read_values(bias_adc[0], imon_adc[0]); */
+	ADC_Read_values(&bias_adc[i % 5], &imon_adc[i % 5]);
+	test_for_alarm();
+	osDelay(25);
+      }
+    // osDelay(1000);
+    // 
 #endif
   }
   /* USER CODE END 5 */
