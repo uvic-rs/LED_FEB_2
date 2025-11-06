@@ -1,5 +1,5 @@
 # LED_FEB_2
-firmware for the LED_FEB in the Hyper-K experiment. More [details](SWdetails.html)
+firmware for the LED_FEB in the Hyper-K experiment. More [details](SWdetails.md)
 can be found here.
 
 ## The Definitions for the various ModBus register types and registers
